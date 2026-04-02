@@ -1,0 +1,73 @@
+{
+  "name": "init/commerce-cart",
+  "description": "Commerce cart foundation package for visitor and authenticated actors",
+  "type": "library",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Init Modules",
+      "email": "dev@init-modules.com"
+    }
+  ],
+  "repositories": [
+    {
+      "type": "composer",
+      "url": "https://satis.init.red"
+    }
+  ],
+  "require": {
+    "php": "^8.4",
+    "laravel/framework": "^12.0",
+    "spatie/laravel-package-tools": "^1.16",
+    "init/core-database": "^1",
+    "init/core-filament": "^1",
+    "init/core-feature-manager": "^1",
+    "init/core-support": "0.*",
+    "init/commerce-catalog": "^1",
+    "init/visitor-session": "^1"
+  },
+  "autoload": {
+    "psr-4": {
+      "Init\\Commerce\\Cart\\": "src/",
+      "Init\\Commerce\\Cart\\Database\\Seeders\\": "database/seeders/"
+    }
+  },
+  "extra": {
+    "laravel": {
+      "providers": [
+        "Init\\Commerce\\Cart\\RootServiceProvider"
+      ]
+    },
+    "merge-plugin": {
+      "include": [
+        "composer.local.json"
+      ],
+      "recurse": true,
+      "replace": true,
+      "ignore-duplicates": false,
+      "merge-dev": true,
+      "merge-extra": false,
+      "merge-extra-deep": false,
+      "merge-scripts": false
+    }
+  },
+  "minimum-stability": "stable",
+  "prefer-stable": true,
+  "config": {
+    "allow-plugins": {
+      "php-http/discovery": true,
+      "tbachert/spi": true,
+      "pestphp/pest-plugin": true
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Tests\\": "tests/"
+    }
+  },
+  "require-dev": {
+    "orchestra/testbench": "^10.0",
+    "pestphp/pest": "^4.2",
+    "pestphp/pest-plugin-laravel": "^4.0"
+  }
+}
