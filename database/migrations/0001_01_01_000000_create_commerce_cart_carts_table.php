@@ -18,12 +18,16 @@ return new class extends Migration
             $table->string('currency', 3)->nullable();
             $table->unsignedInteger('item_count')->default(0);
             $table->unsignedInteger('items_quantity')->default(0);
-            $table->decimal('subtotal_amount', 12, 2)->default(0);
-            $table->decimal('total_amount', 12, 2)->default(0);
+            $table->bigInteger('subtotal_amount')->default(0);
+            $table->bigInteger('discount_total_amount')->default(0);
+            $table->bigInteger('tax_total_amount')->default(0);
+            $table->bigInteger('total_amount')->default(0);
             $table->uuid('merged_into_cart_id')->nullable();
             $table->uuid('converted_order_id')->nullable();
             $table->timestamp('checked_out_at')->nullable()->index();
             $table->timestamp('last_activity_at')->nullable()->index();
+            $table->json('pricing_context')->nullable();
+            $table->json('discount_codes')->nullable();
             $table->json('meta')->nullable();
             $table->timestamps();
 

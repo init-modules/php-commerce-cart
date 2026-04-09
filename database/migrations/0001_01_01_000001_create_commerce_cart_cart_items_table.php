@@ -19,18 +19,26 @@ return new class extends Migration
             $table->string('item_sku')->nullable()->index();
             $table->string('item_type')->nullable()->index();
             $table->unsignedInteger('quantity');
-            $table->decimal('base_price', 12, 2)->default(0);
-            $table->decimal('unit_price', 12, 2)->default(0);
-            $table->decimal('line_base_total', 12, 2)->default(0);
-            $table->decimal('line_total', 12, 2)->default(0);
+            $table->string('configuration_hash')->default('default');
+            $table->bigInteger('base_price_amount')->default(0);
+            $table->bigInteger('configuration_price_adjustment_amount')->default(0);
+            $table->bigInteger('unit_subtotal_amount')->default(0);
+            $table->bigInteger('unit_discount_amount')->default(0);
+            $table->bigInteger('unit_tax_amount')->default(0);
+            $table->bigInteger('unit_total_amount')->default(0);
+            $table->bigInteger('line_subtotal_amount')->default(0);
+            $table->bigInteger('line_discount_amount')->default(0);
+            $table->bigInteger('line_tax_amount')->default(0);
+            $table->bigInteger('line_total_amount')->default(0);
+            $table->json('configuration_snapshot')->nullable();
             $table->json('pricing_snapshot')->nullable();
             $table->json('catalog_snapshot')->nullable();
             $table->json('meta')->nullable();
             $table->timestamps();
 
             $table->unique(
-                ['cart_id', 'catalog_item_type', 'catalog_item_id'],
-                'commerce_cart_items_cart_catalog_unique'
+                ['cart_id', 'catalog_item_type', 'catalog_item_id', 'configuration_hash'],
+                'commerce_cart_items_cart_catalog_config_unique'
             );
             $table->index(['catalog_item_type', 'catalog_item_id'], 'commerce_cart_items_catalog_idx');
         });
