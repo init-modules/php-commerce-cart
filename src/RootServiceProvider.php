@@ -16,11 +16,7 @@ class RootServiceProvider extends PackageServiceProvider
     {
         $package
             ->name('commerce_cart')
-            ->hasConfigFile()
-            ->hasMigrations([
-                '0001_01_01_000000_create_commerce_cart_carts_table',
-                '0001_01_01_000001_create_commerce_cart_cart_items_table',
-            ]);
+            ->hasConfigFile();
     }
 
     public function packageRegistered(): void
