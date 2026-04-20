@@ -1,0 +1,7 @@
+{
+  "project_slug": "commerce-cart",
+  "name": "init/commerce-cart",
+  "entry_type": "package",
+  "scope": "package:init/commerce-cart",
+  "package_name": "init/commerce-cart"
+}
