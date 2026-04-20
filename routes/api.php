@@ -7,6 +7,9 @@ Route::prefix(config('commerce_cart.api.prefix', 'commerce/cart/v1'))->group(fun
     Route::get('current', [CurrentCartController::class, 'show'])
         ->name('current.show');
 
+    Route::post('current/sync', [CurrentCartController::class, 'sync'])
+        ->name('current.sync');
+
     Route::post('current/items', [CurrentCartController::class, 'storeItem'])
         ->name('current.items.store');
 

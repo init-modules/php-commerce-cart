@@ -39,8 +39,8 @@ class Cart extends Model
         'status' => CartStatus::class,
         'item_count' => 'integer',
         'items_quantity' => 'integer',
-        'subtotal_amount' => 'decimal:2',
-        'total_amount' => 'decimal:2',
+        'subtotal_amount' => 'integer',
+        'total_amount' => 'integer',
         'checked_out_at' => 'datetime',
         'last_activity_at' => 'datetime',
         'meta' => 'array',
@@ -93,14 +93,14 @@ class Cart extends Model
 
         $itemCount = $this->items->count();
         $itemsQuantity = $this->items->sum('quantity');
-        $subtotalAmount = $this->items->sum(fn (CartItem $item): float => (float) $item->line_base_total);
-        $totalAmount = $this->items->sum(fn (CartItem $item): float => (float) $item->line_total);
+        $subtotalAmount = $this->items->sum(fn (CartItem $item): float => (float) $item->line_subtotal_amount);
+        $totalAmount = $this->items->sum(fn (CartItem $item): float => (float) $item->line_total_amount);
 
         $this->forceFill([
             'item_count' => $itemCount,
             'items_quantity' => $itemsQuantity,
-            'subtotal_amount' => number_format($subtotalAmount, 2, '.', ''),
-            'total_amount' => number_format($totalAmount, 2, '.', ''),
+            'subtotal_amount' => (int) round($subtotalAmount),
+            'total_amount' => (int) round($totalAmount),
             'last_activity_at' => now(),
         ])->saveQuietly();
 
@@ -110,9 +110,9 @@ class Cart extends Model
     public static function makeActiveActorKey(ResolvedActor|string $actor, ?string $actorId = null): string
     {
         if ($actor instanceof ResolvedActor) {
-            return $actor->type . ':' . $actor->id;
+            return $actor->type.':'.$actor->id;
         }
 
-        return $actor . ':' . (string) $actorId;
+        return $actor.':'.(string) $actorId;
     }
 }

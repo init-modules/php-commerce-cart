@@ -5,6 +5,7 @@ namespace Init\Commerce\Cart\Http;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 use Init\Commerce\Cart\Actions\AddCatalogItemToCart;
+use Init\Commerce\Cart\Actions\MergeActorCarts;
 use Init\Commerce\Cart\Actions\RemoveCartItem;
 use Init\Commerce\Cart\Actions\ResolveActiveCart;
 use Init\Commerce\Cart\Actions\UpdateCartItemQuantity;
@@ -12,15 +13,18 @@ use Init\Commerce\Cart\Models\Cart;
 use Init\Commerce\Cart\Models\CartItem;
 use Init\VisitorSession\Support\RequestActorResolver;
 use Init\VisitorSession\Support\ResolvedActor;
+use Init\VisitorSession\Support\VisitorSessionManager;
 
 class CurrentCartController
 {
     public function __construct(
         private readonly RequestActorResolver $requestActorResolver,
+        private readonly VisitorSessionManager $visitorSessionManager,
         private readonly ResolveActiveCart $resolveActiveCart,
         private readonly AddCatalogItemToCart $addCatalogItemToCart,
         private readonly UpdateCartItemQuantity $updateCartItemQuantity,
         private readonly RemoveCartItem $removeCartItem,
+        private readonly MergeActorCarts $mergeActorCarts,
     ) {}
 
     public function show(Request $request): array
@@ -84,6 +88,38 @@ class CurrentCartController
 
         return [
             'data' => $this->transformCart($cart->fresh('items')),
+        ];
+    }
+
+    public function sync(Request $request): array
+    {
+        $targetActor = $this->requestActorResolver->resolve($request, allowVisitorSession: false);
+
+        if (! $targetActor instanceof ResolvedActor || ! $targetActor->authenticated) {
+            throw ValidationException::withMessages([
+                'actor' => ['Authenticated user is required to sync the current cart.'],
+            ]);
+        }
+
+        $visitorSession = $this->visitorSessionManager->resolveFromRequest($request);
+
+        if ($visitorSession === null) {
+            $cart = $this->resolveActiveCart->execute($targetActor, createIfMissing: true);
+
+            return [
+                'data' => $this->transformCart($cart->load('items')),
+            ];
+        }
+
+        $sourceActor = new ResolvedActor(
+            type: $visitorSession::class,
+            id: (string) $visitorSession->getKey(),
+            authenticated: false,
+        );
+        $cart = $this->mergeActorCarts->execute($sourceActor, $targetActor);
+
+        return [
+            'data' => $this->transformCart($cart->load('items')),
         ];
     }
 

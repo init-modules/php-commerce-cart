@@ -47,8 +47,14 @@ class MergeActorCarts
                             'item_name' => $sourceItem->item_name,
                             'item_sku' => $sourceItem->item_sku,
                             'item_type' => $sourceItem->item_type,
-                            'base_price' => $sourceItem->base_price,
-                            'unit_price' => $sourceItem->unit_price,
+                            'configuration_hash' => $sourceItem->configuration_hash,
+                            'base_price_amount' => $sourceItem->base_price_amount,
+                            'configuration_price_adjustment_amount' => $sourceItem->configuration_price_adjustment_amount,
+                            'unit_subtotal_amount' => $sourceItem->unit_subtotal_amount,
+                            'unit_discount_amount' => $sourceItem->unit_discount_amount,
+                            'unit_tax_amount' => $sourceItem->unit_tax_amount,
+                            'unit_total_amount' => $sourceItem->unit_total_amount,
+                            'configuration_snapshot' => $sourceItem->configuration_snapshot,
                             'pricing_snapshot' => $sourceItem->pricing_snapshot,
                             'catalog_snapshot' => $sourceItem->catalog_snapshot,
                             'meta' => $sourceItem->meta,
@@ -57,6 +63,7 @@ class MergeActorCarts
 
                     $targetItem->save();
                     $sourceItem->delete();
+
                     continue;
                 }
 

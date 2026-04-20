@@ -42,8 +42,9 @@ class CatalogItemResolver
             'item_name' => $catalogSnapshot['name'],
             'item_sku' => $catalogSnapshot['sku'],
             'item_type' => $catalogSnapshot['item_type'],
-            'base_price' => $pricingSnapshot['base_price'],
-            'unit_price' => $pricingSnapshot['unit_price'],
+            'base_price_amount' => $this->integerAmount($pricingSnapshot['base_price']),
+            'unit_subtotal_amount' => $this->integerAmount($pricingSnapshot['base_price']),
+            'unit_total_amount' => $this->integerAmount($pricingSnapshot['unit_price']),
             'pricing_snapshot' => $pricingSnapshot,
             'catalog_snapshot' => $catalogSnapshot,
         ];
@@ -96,6 +97,11 @@ class CatalogItemResolver
         return number_format((float) $value, 2, '.', '');
     }
 
+    private function integerAmount(mixed $value): int
+    {
+        return (int) round((float) $value);
+    }
+
     private function stringOrNull(mixed $value): ?string
     {
         if ($value === null || $value === '') {
@@ -144,7 +150,7 @@ class CatalogItemResolver
     }
 
     /**
-     * @param class-string<Model> $modelClass
+     * @param  class-string<Model>  $modelClass
      */
     private function ensureAllowedModelClass(string $modelClass): void
     {

@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Str;
+use Illuminate\Foundation\Auth\User as AuthenticatableUser;
 use Init\Commerce\Catalog\Enums\CatalogInventoryMode;
 use Init\Commerce\Catalog\Enums\CatalogItemStatus;
 use Init\Commerce\Catalog\Enums\CatalogItemType;
@@ -31,7 +32,46 @@ function createCatalogOffer(array $attributes = []): CatalogItem
 
 it('registers current cart routes', function () {
     expect(route('commerce.cart.api.current.show', [], false))->toBe('/api/commerce/cart/v1/current');
+    expect(route('commerce.cart.api.current.sync', [], false))->toBe('/api/commerce/cart/v1/current/sync');
     expect(route('commerce.cart.api.current.items.store', [], false))->toBe('/api/commerce/cart/v1/current/items');
+});
+
+it('syncs visitor cart lines into the authenticated actor cart', function () {
+    $headers = visitorSessionHeaders();
+    $product = createCatalogOffer([
+        'sku' => 'SYNC-ITEM-001',
+        'name' => 'Sync Item',
+        'slug' => 'sync-item',
+        'inventory_mode' => CatalogInventoryMode::UNTRACKED,
+    ]);
+
+    $this->withHeaders($headers)
+        ->postJson('/api/commerce/cart/v1/current/items', [
+            'catalog_item_id' => (string) $product->getKey(),
+            'quantity' => 2,
+        ])
+        ->assertSuccessful()
+        ->assertJsonPath('data.actor.authenticated', false);
+
+    $user = new class extends AuthenticatableUser {
+        public $incrementing = false;
+
+        protected $keyType = 'string';
+
+        public function getAuthIdentifierName()
+        {
+            return 'id';
+        }
+    };
+    $user->forceFill(['id' => 'cart-sync-user']);
+    $this->actingAs($user);
+
+    $this->withHeaders($headers)
+        ->postJson('/api/commerce/cart/v1/current/sync')
+        ->assertSuccessful()
+        ->assertJsonPath('data.actor.authenticated', true)
+        ->assertJsonPath('data.items_quantity', 2)
+        ->assertJsonPath('data.items.0.name', 'Sync Item');
 });
 
 it('rejects catalog item types outside the commerce whitelist', function () {
