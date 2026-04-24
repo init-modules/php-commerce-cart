@@ -59,6 +59,9 @@ class CatalogItemResolver
             'sku' => $this->stringOrNull($this->extractAttribute($catalogItem, 'sku')),
             'item_type' => $this->stringOrNull($this->extractAttribute($catalogItem, 'type')),
             'tracked' => (bool) ($this->extractAttribute($catalogItem, 'tracked') ?? false),
+            'cover_image' => $this->stringOrNull(
+                $this->extractAttribute($catalogItem, 'cover_image') ?? $this->extractCoverImage($catalogItem)
+            ),
         ];
     }
 
@@ -87,6 +90,30 @@ class CatalogItemResolver
             if ($value !== null && $value !== '') {
                 return $value;
             }
+        }
+
+        return null;
+    }
+
+    private function extractCoverImage(Model $catalogItem): mixed
+    {
+        if (method_exists($catalogItem, 'getFirstMediaUrl')) {
+            $url = $catalogItem->getFirstMediaUrl('cover');
+
+            if ($url !== null && $url !== '') {
+                return $url;
+            }
+        }
+
+        $meta = $catalogItem->getAttribute('meta');
+
+        if (is_array($meta)) {
+            return data_get($meta, 'cover_image')
+                ?? data_get($meta, 'coverImage')
+                ?? data_get($meta, 'image')
+                ?? data_get($meta, 'image_url')
+                ?? data_get($meta, 'thumbnail')
+                ?? data_get($meta, 'thumbnail_url');
         }
 
         return null;

@@ -36,6 +36,7 @@ return [
             'unit_price' => ['public_price', 'price', 'effective_price'],
             'currency' => ['currency', 'currency_code'],
             'tracked' => ['tracked', 'track_stock', 'is_tracked'],
+            'cover_image' => ['cover_image', 'coverImage', 'image', 'image_url', 'thumbnail', 'thumbnail_url'],
         ],
     ],
 ];
