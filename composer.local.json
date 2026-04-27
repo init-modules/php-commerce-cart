@@ -1,0 +1,14 @@
+{
+	"repositories": [
+		{
+			"type": "path",
+			"url": "/var/pkg/commerce-foundation/commerce-catalog",
+			"options": {
+				"symlink": true
+			}
+		}
+	],
+	"require": {
+		"init/commerce-catalog": "dev-main as 1.0.0"
+	}
+}

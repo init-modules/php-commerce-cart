@@ -1,5 +1,30 @@
-vendor/
-composer.local.json
-composer.test.json
-composer.test.lock
-composer.lock
+# Dependencies
+/vendor/
+composer.phar
+
+# Env
+.env
+.env.*
+!.env.example
+
+# Logs
+*.log
+/storage/logs/
+
+# Cache / build
+.phpunit.cache/
+.phpunit.result.cache
+.php-cs-fixer.cache
+.phpstan.cache/
+/storage/framework/cache/
+/storage/framework/sessions/
+/storage/framework/views/
+/bootstrap/cache/*
+!/bootstrap/cache/.gitignore
+
+# OS / IDE
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/*
+!.vscode/extensions.json
